@@ -4,15 +4,17 @@ from bs4 import BeautifulSoup as soup
 import smtplib 
 import io  
 import csv 
+# Call the total script like : scrape_page_type_1(get_urls(4,6),6), where 4 specifies the dropdownselection and 6 is the number of pages
 
 # The front end can make use of the passing parameters
 # In the dropdown list, the developer can give the Words like Laptops, Mobiles, Cameras, Headphones, Air conditioners etc
 # Also the user can define the limit of number of pages to scrap [It is used in both functions]
 
 def get_urls(DropDownSelection,limit):
-  '''The First function executed when scrape_page(get_urls(dds,limit),limit) is called
-  is the get_url, it makes a list of links according to the limit and selection
-  in order to forward to the scraper part'''
+  '''When get_url() is called, it makes a list of links according to the limit and selection
+  in order to forward to the scraper part
+  Argument1= DropDownSelection :: Selects the category from the frontend
+  Argument2= limit :: The limit for the number of web pages selected by user or by developer in frontend'''
   urlss=[] 
   # 1 = Laptops, 2 = Mobiles, 3 = Cameras, 4 = Headphones, 5 = AC's  
   switch= {
@@ -26,12 +28,16 @@ def get_urls(DropDownSelection,limit):
     item = switch[DropDownSelection] + str(i)
     urlss=urlss+[item]
   # Change the variable with a dropdown box when merging with its front end according to the need
+  '''return(list)::
+  Returns the list names urlss that contains the list of links based on the given category'''
   return (urlss)
 
-def type2(urlss,limit):
+def scrape_page_type_2(urlss,limit):
   '''When the type1 script fails to identify the sections, the type2 will be executed, most 
   filpkart section relies on these two types, thus the scraper follows same parameters and gives 
-  the output'''
+  the output
+  Argument1= urlss :: The list of links to be scraped that was the result from get_urls
+  Argument2= limit :: The limit for the number of web pages selected by user or by developer in frontend'''
   title=[]
   amount=[]
   linkss=[]
@@ -73,12 +79,16 @@ def type2(urlss,limit):
         realprice=nextcontainers[0].text
         #Found price
         amount=amount+[realprice]
+  '''return(list)::
+  Returns the list Links, Ratings, Amount, Number of products scraped in list with strict order'''
   return (linkss, title, ratings, amount, len(amount)) 
 
-def scrape_page(urlss,limit):
+def scrape_page_type_1(urlss,limit):
   '''The get_urls return the url's list to the scrape_page() function
   This function contains the type1 script of the scraper, which is one of the 
-  pattern in which the details of the products are arranged'''
+  pattern in which the details of the products are arranged
+  Argument1= urlss :: The list of links to be scraped that was the result from get_urls
+  Argument2= limit :: The limit for the number of web pages selected by user or by developer in frontend'''
   title=[]
   amount=[]
   linkss=[]
@@ -123,11 +133,8 @@ def scrape_page(urlss,limit):
           
   #for different type of page  
   if not title:  
-   answer = type2(urlss,limit)
+   answer = scrape_page_type_2(urlss,limit)
    return answer
   else:
-   '''And finally the function returns the list of links,ratings,amount,number of products.'''
   #Returns the Links, Ratings, Amount, Number of products scraped in list with strict order
    return (linkss, title, ratings, amount, len(amount)) 
-
-# Call the function like : scrape_page(get_urls(4,6),6), where 4 specifies the dropdownselection and 6 is the number of pages
