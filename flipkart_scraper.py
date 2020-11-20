@@ -37,7 +37,7 @@ def scrape_page_type_2(urlss,limit):
   filpkart section relies on these two types, thus the scraper follows same parameters and gives 
   the output
   Argument1= urlss :: The list of links to be scraped that was the result from get_urls
-  Argument2= limit :: The limit for the number of web pages selected by user or by developer in frontend'''
+  '''
   title=[]
   amount=[]
   linkss=[]
@@ -50,45 +50,45 @@ def scrape_page_type_2(urlss,limit):
     page_html = ucli.read() 
     ucli.close()
     page_soup = soup(page_html,"html.parser")
-    containers = page_soup.findAll("div",{"class":"bhgxx2 col-12-12"})
+    containers = page_soup.findAll("div",{"class":"_2pi5LC col-12-12"})
     #After fixing the whole target, the scraper moves towards the content using findAll function 
     for container in containers:
-      datas=container.findAll("div",{"class":"_3liAhj"})
-      for data in datas:
-        link=container.findAll("a",{"class":"Zhf2z-"})
-        for nextlinks in link:
-          orglink=nextlinks.get('href')
-          #Found the links for the targeted product
-          real="https://www.flipkart.com"+orglink
-          linkss=linkss+[real]
-          print(linkss)
-        maindata=data.findAll("a",{"class":"_2cLu-l"})
-        mt=maindata[0].text
-        subdata=data.findAll("div",{"class":"_1rcHFq"})
-        sb=subdata[0].text
-        #Found title
-        title=title+[mt]
-        rating=data.findAll("div",{"class":"niH0FQ _36Fcw_"})
-        #Found ratings
-        try:
-          oo=rating[0].span.text
-          ratings=ratings+[oo]
-        except:
-          ratings=ratings+["No rating"]
-        nextcontainers = data.findAll("div",{"class":"_1vC4OE"})
-        realprice=nextcontainers[0].text
+      link=container.findAll("a",{"class":"s1Q9rs"})
+      for nextlinks in link:
+        orglink=nextlinks.get('href')
+        headset=nextlinks.get('title')
+        #Found the links for the targeted product
+        real="https://www.flipkart.com"+orglink
+        linkss=linkss+[real]
+        title=title+[headset]
+      rating=container.findAll("div",{"class":"gUuXy- _2D5lwg"})
+      try:
+        oo=rating[0].span.text
+        ratings=ratings+[oo]
+      except:
+        ratings=ratings+["No rating"]
+      nextcontainers = container.findAll("div",{"class":"_25b18c"})
+      for cont in nextcontainers:
+        realprice=cont.div.text
         #Found price
         amount=amount+[realprice]
-  '''return(list)::
-  Returns the list Links, Ratings, Amount, Number of products scraped in list with strict order'''
+    '''
+  Returns the list of product details in the pages.
+
+          Parameters:
+                  a (str,list): List of strings
+                  b (int): Another decimal integer
+
+          Returns:
+                  Link of the individual product
+                  Title of the product
+                  Rating of the product
+                  Amount of the product
+                  number of pages scraped
+  '''
   return (linkss, title, ratings, amount, len(amount)) 
 
 def scrape_page_type_1(urlss,limit):
-  '''The get_urls return the url's list to the scrape_page() function
-  This function contains the type1 script of the scraper, which is one of the 
-  pattern in which the details of the products are arranged
-  Argument1= urlss :: The list of links to be scraped that was the result from get_urls
-  Argument2= limit :: The limit for the number of web pages selected by user or by developer in frontend'''
   title=[]
   amount=[]
   linkss=[]
@@ -101,35 +101,31 @@ def scrape_page_type_1(urlss,limit):
     page_html = ucli.read() 
     ucli.close()
     page_soup = soup(page_html,"html.parser")
-    containers = page_soup.findAll("div",{"class":"bhgxx2 col-12-12"})
+    containers = page_soup.findAll("div",{"class":"_2pi5LC col-12-12"})
     #After fixing the whole target, the scraper moves towards the content using findAll function 
     for container in containers:
-      datas=container.findAll("a",{"class":"_31qSD5"})
-      link=container.findAll("div",{"class":"_1UoZlX"})
+      link=container.findAll("div",{"class":"_2kHMtA"})
       for nextlinks in link:
         orglink=nextlinks.a.get('href')
         #Found the links for the targeted product
         real="https://www.flipkart.com"+orglink
         linkss=linkss+[real]
+      datas=container.findAll("div",{"class":"_3pLy-c row"})
       for data in datas:
-        nextcontainers = data.findAll("div",{"class":"_1uv9Cb"})
+        head=data.findAll("div",{"class":"col col-7-12"})
+        mt=head[0].div.text
+        title=title+[mt]
+        rating=data.findAll("div",{"class":"gUuXy-"})
+        try:
+          oo=rating[0].span.text
+          ratings=ratings+[oo]
+        except:
+          ratings=ratings+["No rating"]
+        nextcontainers = data.findAll("div",{"class":"_25b18c"})
         for cont in nextcontainers:
           realprice=cont.div.text
           #Found price
           amount=amount+[realprice]
-        maindata=data.findAll("div",{"class":"_1-2Iqu row"})
-        for headdata in maindata:
-          head=headdata.findAll("div",{"class":"col col-7-12"})
-          mt=head[0].div.text
-          #Found title
-          title=title+[mt]
-          #Found ratings
-          rating=headdata.findAll("div",{"class":"niH0FQ"})
-          try:
-            oo=rating[0].span.text
-            ratings=ratings+[oo]
-          except:
-            ratings=ratings+["No rating"]
           
   #for different type of page  
   if not title:  
@@ -137,4 +133,4 @@ def scrape_page_type_1(urlss,limit):
    return answer
   else:
   #Returns the Links, Ratings, Amount, Number of products scraped in list with strict order
-   return (linkss, title, ratings, amount, len(amount)) 
+   return (linkss, title, ratings, amount, len(amount))
